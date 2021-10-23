@@ -1,6 +1,6 @@
 import firebase from 'firebase/app';
-import 'firebase/firestore';
 import 'firebase/auth';
+import 'firebase/firestore';
 
 
 const config = {
@@ -11,6 +11,9 @@ const config = {
     messagingSenderId: "356045416554",
     appId: "1:356045416554:web:7b938b5e77af57bac80213"
   };
+
+  
+  firebase.initializeApp(config);
 
   export const createUserProfileDocument =  async (userAuth, additionalData) => {
     if(!userAuth) return;
@@ -38,7 +41,35 @@ const config = {
     return userRef;
   }
 
-  firebase.initializeApp(config);
+  export const addCollectionAndDocuments = async (collectionKey,objectsToAdd) =>{
+    const collectionRef = firestore.collection(collectionKey);
+    
+    const batch = firestore.batch();
+
+    objectsToAdd.forEach(obj =>{
+      const newDocRef = collectionRef.doc();
+      batch.set(newDocRef,obj);
+    })
+    return await batch.commit();
+  }
+
+  export const convertCollectionsSnapshotToMap = (collections) =>{
+    const transformedCollection = collections.docs.map(doc => {
+      const {title,items} = doc.data();
+
+      return{
+        routeName: encodeURI(title.toLowerCase()),
+        id: doc.id,
+        title,
+        items
+      }
+    });
+
+    return transformedCollection.reduce((accumulator,collection) =>{
+      accumulator[collection.title.toLowerCase()]=collection;
+      return accumulator;
+    },{});
+  }
 
   export const auth = firebase.auth();
 

@@ -14,6 +14,7 @@ import { setCurrentUser } from './redux/user/user.action';
 import { selectCurrentUser } from './redux/user/user.selectors';
 
 
+
 class App extends React.Component {
 
   unsubscribeFromAuth = null;
@@ -30,9 +31,10 @@ class App extends React.Component {
             ...snapShot.data()
           });
         });
-      } else {
-
+      
+      }else{
         setCurrentUser(userAuth);
+        //addCollectionAndDocuments('collections',collections);
       }
     });
   }
